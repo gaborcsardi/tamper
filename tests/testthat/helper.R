@@ -15,7 +15,7 @@ get_dump <- function(expr) {
     )
   )
   res <- get("last.dump", envir = globalenv())
-  # clean_dump()
+  clean_dump()
   res
 }
 
