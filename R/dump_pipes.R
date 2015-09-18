@@ -21,6 +21,10 @@ dump_pipes <- function(dumpto = "last.dump", to.file = FALSE) {
   err_msg <- geterrmessage()
   pipe_env <- get_pipe_calls(sys.calls(), sys.frames())
 
+  if (is.na(pipe_env$pipe_call)) {
+    return(dump.frames(dumpto = dumpto, to.file = to.file))
+  }
+
   last_dump <- pipe_env$frames
   names(last_dump) <- limitedLabels(pipe_env$calls)
 
@@ -89,6 +93,14 @@ get_pipe_calls <- function(calls, frames) {
 
   freduce_calls <- get_pipe_stages(calls)
   pipe_call <- get_last_pipe_call(calls)
+
+  ## We are not in a pipe
+  if (is.na(pipe_call)) {
+    return(list(
+      pipe_call = NA
+    ))
+  }
+
   freduce_calls <- freduce_calls[ freduce_calls > pipe_call ]
 
   from <- find_interesting_call(calls)
