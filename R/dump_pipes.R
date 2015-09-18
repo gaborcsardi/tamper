@@ -29,6 +29,8 @@ dump_pipes <- function(dumpto = "last.dump", to.file = FALSE) {
   attr(last_dump, "error.message") <- err_msg
   class(last_dump) <- c("dump_pipes", "dump.frames")
 
+  attr(last_dump, "can_browse") <- can_browse_errored(pipe_env)
+
   assign(dumpto, last_dump)
   if (to.file) {
     save(list = dumpto, file = paste(dumpto, "rda", sep = "."))
@@ -37,6 +39,19 @@ dump_pipes <- function(dumpto = "last.dump", to.file = FALSE) {
     assign(dumpto, last_dump, envir = do.call(ge, list()))
   }
   invisible()
+}
+
+## Decides whether the function with the error is in the
+## stack. If the function is a primitive function, then it is
+## not in the stack. We just check if the last thing in the
+## is a magrittr call.
+
+can_browse_errored <- function(pipe_env) {
+  last_call <- tail(pipe_env$calls, 1)[[1]]
+  ! identical(
+    last_call[[1]],
+    as.call(quote(function_list[[1L]]))
+  )
 }
 
 #' Pretty-print a pipeline dump
