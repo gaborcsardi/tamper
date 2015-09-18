@@ -81,3 +81,27 @@ test_that("Error in the lhs is OK", {
     print()
 
 })
+
+test_that("Using non-primitive functions", {
+
+  skip(message = "not ready yet for a real test")
+
+  old_handler <- getOption("error")
+  on.exit(options(error = old_handler))
+  options(error = tamper)
+
+  ## Make sure these are not primitive
+  multiply_by <- function(x, y) if (1) x * y
+  add <- function(x, y) if (1) x + y
+  subtract <- function(x, y) if (1) x - y
+  divide_by <- function(x, y) if (1) x / y
+
+  1:10 %>%
+    (function(x) force(x)) %>%
+    multiply_by(10) %>%
+    add(10) %>%
+    add("oh no!") %>%
+    subtract(5) %>%
+    divide_by(5)
+
+})
