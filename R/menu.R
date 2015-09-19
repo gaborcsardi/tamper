@@ -19,20 +19,15 @@ pipe_menu <- function(dump) {
       pipe_stack <- ! pipe_stack
 
     } else if (pipe_stack && which == 2) {
-      eval(substitute(browser(skipCalls = skip),
-                      list(skip = 7 - dump$pipe_call)),
-           envir = sys.frame(dump$pipe_call))
+      evalq(browser(), envir = sys.frame(dump$pipe_call))
 
     } else if (which > 1 && pipe_stack) {
       which <- which - 2
-      eval(substitute(browser(skipCalls = skip),
-                      list(skip = 7 - dump$freduce_calls[which])),
-           envir = sys.frame(dump$freduce_calls[which]))
+      evalq(browser(), envir = sys.frame(dump$freduce_calls[which]))
 
     } else if (which > 1 && ! pipe_stack) {
       which <- which - 1
-      eval(substitute(browser(skipCalls = skip),
-                      list(skip = 7-which)), envir = sys.frame(which))
+      evalq(browser(), envir = sys.frame(which))
 
     } else {
       break
