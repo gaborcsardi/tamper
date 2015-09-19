@@ -33,8 +33,6 @@ dump_pipes <- function(dumpto = "last.dump", to.file = FALSE) {
   attr(last_dump, "error.message") <- err_msg
   class(last_dump) <- c("dump_pipes", "dump.frames")
 
-  attr(last_dump, "can_browse") <- can_browse_errored(pipe_env)
-
   assign(dumpto, last_dump)
   if (to.file) {
     save(list = dumpto, file = paste(dumpto, "rda", sep = "."))
@@ -43,29 +41,6 @@ dump_pipes <- function(dumpto = "last.dump", to.file = FALSE) {
     assign(dumpto, last_dump, envir = do.call(ge, list()))
   }
   invisible()
-}
-
-## Decides whether the function with the error is in the
-## stack. If the function is a primitive function, then it is
-## not in the stack. We just check if the last thing in the
-## is a magrittr call.
-
-can_browse_errored <- function(pipe_env) {
-
-  ## This is a very sketchy way to detect if testthat is running.
-  ## If it is running, then we are inside withCallingHandlers,
-  ## and the last function of the stack is not good, we need to
-  ## look a bit further up.
-  if (Sys.getenv("NOT_CRAN") == "") {
-    last_call <- tail(pipe_env$calls, 1)[[1]]
-  } else {
-    last_call <- tail(pipe_env$calls, 3)[[1]]
-  }
-
-  ! identical(
-    last_call[[1]],
-    as.call(quote(function_list[[1L]]))
-  )
 }
 
 #' Pretty-print a pipeline dump
@@ -126,6 +101,9 @@ get_pipe_calls <- function(calls, frames) {
   ## Nice printout of pipe stages
   chr_stages <- format_pipe_stages(chr_chain_parts, bad_stage)
 
+  ## Can we get into the errored function?
+  can_browse <- can_browse_errored(calls)
+
   list(
     calls = calls,
     frames = frames,
@@ -133,7 +111,31 @@ get_pipe_calls <- function(calls, frames) {
     pipe_call = pipe_call,
     from = from,
     chr_stages = chr_stages,
-    bad_stage = bad_stage
+    bad_stage = bad_stage,
+    can_browse = can_browse
+  )
+}
+
+## Decides whether the function with the error is in the
+## stack. If the function is a primitive function, then it is
+## not in the stack. We just check if the last thing in the
+## is a magrittr call.
+
+can_browse_errored <- function(calls) {
+
+  ## This is a very sketchy way to detect if testthat is running.
+  ## If it is running, then we are inside withCallingHandlers,
+  ## and the last function of the stack is not good, we need to
+  ## look a bit further up.
+  if (Sys.getenv("NOT_CRAN") == "") {
+    last_call <- tail(calls, 1)[[1]]
+  } else {
+    last_call <- tail(calls, 3)[[1]]
+  }
+
+  ! identical(
+    last_call[[1]],
+    as.call(quote(function_list[[1L]]))
   )
 }
 
