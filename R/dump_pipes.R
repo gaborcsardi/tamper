@@ -51,7 +51,17 @@ dump_pipes <- function(dumpto = "last.dump", to.file = FALSE) {
 ## is a magrittr call.
 
 can_browse_errored <- function(pipe_env) {
-  last_call <- tail(pipe_env$calls, 1)[[1]]
+
+  ## This is a very sketchy way to detect if testthat is running.
+  ## If it is running, then we are inside withCallingHandlers,
+  ## and the last function of the stack is not good, we need to
+  ## look a bit further up.
+  if (Sys.getenv("NOT_CRAN") == "") {
+    last_call <- tail(pipe_env$calls, 1)[[1]]
+  } else {
+    last_call <- tail(pipe_env$calls, 3)[[1]]
+  }
+
   ! identical(
     last_call[[1]],
     as.call(quote(function_list[[1L]]))
