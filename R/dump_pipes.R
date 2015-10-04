@@ -127,7 +127,7 @@ can_browse_errored <- function(calls) {
   ## If it is running, then we are inside withCallingHandlers,
   ## and the last function of the stack is not good, we need to
   ## look a bit further up.
-  if (Sys.getenv("NOT_CRAN") == "") {
+  if (Sys.getenv("R_TESTS") == "") {
     last_call <- tail(calls, 1)[[1]]
   } else {
     last_call <- tail(calls, 3)[[1]]
