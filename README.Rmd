@@ -72,8 +72,8 @@ Enter 0 to exit or choose:
 Selection:
 ```
 
-The stage with the error is clearly marged with an arrow. You can get to
-the function in which the error happened with selecting `2`. (Unless it
+The stage with the error is clearly marked with an arrow. You can get to
+the function in which the error happened by selecting `2`. (Unless it
 is a primitive function, those are not in the call stack.)
 
 If you select `6`, you can browse the frame that corresponds to the
