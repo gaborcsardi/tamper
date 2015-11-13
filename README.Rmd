@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 > Easier Debugging of `magrittr` Pipes
 
 [![Linux Build Status](https://travis-ci.org/gaborcsardi/tamper.svg?branch=master)](https://travis-ci.org/gaborcsardi/tamper)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/tamper?svg=true)](https://ci.appveyor.com/project/gaborcsardi/tamper)
+<!--[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/tamper?svg=true)](https://ci.appveyor.com/project/gaborcsardi/tamper)-->
 [![](http://www.r-pkg.org/badges/version/tamper)](http://www.r-pkg.org/pkg/tamper)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/tamper)](http://www.r-pkg.org/pkg/tamper)
 
@@ -32,15 +32,43 @@ marks the place of the error, and helps saving the temporary results.
 devtools::install_github("gaborcsardi/tamper")
 ```
 
+## Rationale
+
+Pipes make code more readable, but their internal non-standard evaluation sorcery interacts poorly with some development tools, in particular `recover`, which helps inspecting the call stack after an error has occurred.
+
+```r
+library(magrittr)
+options(error = recover)
+1:10 %>%
+  multiply_by(10) %>%
+  add(10) %>%
+  add("oh no!") %>%
+  subtract(5) %>%
+  divide_by(5)
+  
+Error in add(., "oh no!") : non-numeric argument to binary operator
+
+Enter a frame number, or 0 to exit   
+
+1: 1:10 %>% multiply_by(10) %>% add(10) %>% add("oh no!") %>% subtract(5) %>% divide_by(5)
+2: withVisible(eval(quote(`_fseq`(`_lhs`)), env, env))
+3: eval(quote(`_fseq`(`_lhs`)), env, env)
+4: eval(expr, envir, enclos)
+5: `_fseq`(`_lhs`)
+6: freduce(value, `_function_list`)
+7: function_list[[i]](value)
+```
+
+Doh? What does that mean? Only @smbache knows! What are mere mortals to do? `tamper` to the rescue.
+
 ## Usage
 
 ```r
 options(error = tamper::tamper)
 ```
 
-Then, if you make a mistake in a pipeline, instead of the standard
-R stack trace, `tamper` is invoked and you can explore the data in
-the pipeline, and also save to a temporary variable.
+Then, if you make a mistake in a pipeline, instead of the above meta-mumbo-jumbo produced by a clueless `recover`, 
+`tamper` is invoked and you can explore the data in the pipeline, and also save to a temporary variable.
 
 ```r
 library(magrittr)
