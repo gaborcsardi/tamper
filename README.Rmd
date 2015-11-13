@@ -1,3 +1,8 @@
+---
+output: 
+  html_document: 
+    keep_md: yes
+---
 
 ```{r, setup, echo = FALSE, message = FALSE}
 knitr::opts_chunk$set(
@@ -13,7 +18,7 @@ knitr::opts_chunk$set(
 > Easier Debugging of `magrittr` Pipes
 
 [![Linux Build Status](https://travis-ci.org/gaborcsardi/tamper.svg?branch=master)](https://travis-ci.org/gaborcsardi/tamper)
-<!--[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/tamper?svg=true)](https://ci.appveyor.com/project/gaborcsardi/tamper)-->
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/github/gaborcsardi/tamper?svg=true)](https://ci.appveyor.com/project/gaborcsardi/tamper)
 [![](http://www.r-pkg.org/badges/version/tamper)](http://www.r-pkg.org/pkg/tamper)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/tamper)](http://www.r-pkg.org/pkg/tamper)
 
